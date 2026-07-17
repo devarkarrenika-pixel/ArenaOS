@@ -1874,3 +1874,73 @@ function dismissAlertPopup() {
   if (popup) popup.style.display = "none";
 }
 window.dismissAlertPopup = dismissAlertPopup;
+
+/**
+ * Choreographed Demo Tour Mode for LinkedIn Screen Recording
+ */
+function startDemoTour() {
+  // 1. Initial greeting and mode switch
+  showSystemAlert("🎥 DEMO TOUR STARTING", "Choreographed tour starting. Get your screen recorder ready!");
+  
+  setTimeout(() => {
+    switchPortal('fan');
+    // Set ticket section to trigger route drawing and seating canvas changes
+    const selectSec = document.getElementById("ticketSection");
+    if (selectSec) {
+      selectSec.value = "108";
+      updateTicketContext();
+    }
+    appendChatMessage("assistant", "🤖 Welcome to ArenaOS! I've loaded your ticket. Drawing your accessible route to Section 108...");
+  }, 2500);
+
+  // 2. Open AR Navigation HUD
+  setTimeout(() => {
+    openArWayfinding();
+  }, 7000);
+
+  // 3. Switch AR destination, show visual pointers
+  setTimeout(() => {
+    switchArDestination('restroom');
+  }, 10500);
+
+  // 4. Close AR, browse concessions, add items to cart
+  setTimeout(() => {
+    closeArWayfinding();
+    addToCart(1); // Eco Beef Burger
+    addToCart(3); // Loaded Eco-Fries
+    appendChatMessage("assistant", "♻️ Eco Beef Burger and Loaded Eco-Fries added to your order. You unlocked a 10% discount using EcoPoints!");
+  }, 14000);
+
+  // 5. Checkout cart order
+  setTimeout(() => {
+    checkoutCart();
+  }, 18000);
+
+  // 6. Switch to Staff Command Center and run automated diagnostics tests
+  setTimeout(() => {
+    switchPortal('staff');
+    const diagBtn = document.querySelector(".diagnostics-btn");
+    if (diagBtn) diagBtn.click();
+  }, 21000);
+
+  // 7. Input a mock incident report & run triage
+  setTimeout(() => {
+    const reportInput = document.getElementById("incidentReportInput");
+    if (reportInput) {
+      reportInput.value = "Medical event: fan collapsed near Section 108 concourse entrance.";
+      runAiIncidentTriage();
+    }
+  }, 26000);
+
+  // 8. Action the dispatch
+  setTimeout(() => {
+    dispatchTriageIncident();
+  }, 30000);
+
+  // 9. Switch back to Fan portal and score a Goal to celebrate!
+  setTimeout(() => {
+    switchPortal('fan');
+    triggerGoalCelebration();
+  }, 33000);
+}
+window.startDemoTour = startDemoTour;
