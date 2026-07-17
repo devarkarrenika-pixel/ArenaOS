@@ -1,0 +1,13 @@
+# GCP App Engine deployment configuration for ArenaOS
+runtime: python311
+
+handlers:
+# Match root to index.html
+- url: /
+  static_files: index.html
+  upload: index.html
+
+# Match all other static assets (CSS, JS, images, walkthroughs)
+- url: /(.*)
+  static_files: \1
+  upload: (.*)

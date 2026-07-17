@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArenaOS | FIFA World Cup 2026 Stadium Operations & Fan Companion</title>
+  <meta name="description" content="GenAI-enabled operations control and fan experience suite for FIFA World Cup 2026 matches.">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="app-nav" role="navigation" aria-label="Main Navigation">
+    <div class="logo-container">
+      <div class="logo-icon" aria-hidden="true">
+        <i data-lucide="trophy" style="width: 22px; height: 22px; color: var(--bg-darker)"></i>
+      </div>
+      <div>
+        <span class="logo-text">Arena<span style="color: var(--fifa-green)">OS</span></span>
+        <span class="logo-badge">FIFA 2026</span>
+      </div>
+    </div>
+
+    <!-- Mode Selector Tabs -->
+    <div class="nav-modes" role="tablist">
+      <button class="mode-tab active" id="btnFanMode" role="tab" aria-selected="true" aria-controls="fanPortal" onclick="switchPortal('fan')">
+        <i data-lucide="users" style="width: 16px; height: 16px;" aria-hidden="true"></i>
+        Fan Companion
+      </button>
+      <button class="mode-tab" id="btnStaffMode" role="tab" aria-selected="false" aria-controls="staffPortal" onclick="switchPortal('staff')">
+        <i data-lucide="shield-alert" style="width: 16px; height: 16px;" aria-hidden="true"></i>
+        Command Center
+      </button>
+    </div>
+
+    <!-- Live Simulation Clock, Scoreboard Trigger & Theme Vibe -->
+    <div class="nav-info">
+
+
+      <!-- GOAL trigger for fan engagement -->
+      <button class="preset-btn" style="background: linear-gradient(135deg, var(--fifa-gold) 0%, #ffaa00 100%); color: #000; font-weight: 800; border: none; font-size: 11px; padding: 6px 12px;" onclick="triggerGoalCelebration()" aria-label="Simulate Scoring a Goal">
+        ⚽ SCORE GOAL!
+      </button>
+
+      <div class="sim-time-box" aria-live="off">
+        <div class="sim-pulse" aria-hidden="true"></div>
+        <span id="simTimeLabel">18:30:00</span>
+        <span style="color: var(--fifa-gold); font-weight: bold;" id="simMatchStatus">PRE-MATCH (Kickoff -90m)</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==================== FAN COMPANION PORTAL ==================== -->
+  <main class="portal-container active" id="fanPortal" role="main" aria-label="Fan Companion Portal" style="margin-bottom: 60px;">
+    
+    <!-- Matchday Hero Banner Card (Spans across all grid columns) -->
+    <div class="glass-panel matchday-banner-card" style="grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; padding: 25px 40px; border-radius: var(--border-radius); overflow: hidden; position: relative;">
+      <div style="z-index: 2;">
+        <span class="logo-badge" style="background: var(--fifa-gold); color: #000; font-weight: 800; font-size: 10px;">GROUP B MATCH 1</span>
+        <h1 style="font-size: 32px; font-family: var(--font-header); text-transform: uppercase; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.8); margin-top: 5px;">USA vs ENGLAND</h1>
+        <p style="font-size: 13px; color: var(--text-main); text-shadow: 0 1px 5px rgba(0,0,0,0.9); margin-top: 2px;">MetLife Stadium Arena • 82,500 Fans • Live Broadcast Suite</p>
+      </div>
+      <!-- Scoreboard Display -->
+      <div style="z-index: 2; text-align: center; display: flex; align-items: center; gap: 20px; background: rgba(3, 5, 11, 0.85); border: 2px solid var(--fifa-gold); padding: 15px 30px; border-radius: 12px; box-shadow: 0 0 20px var(--fifa-gold-glow);">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <div class="team-jersey jersey-usa"></div>
+          <span style="font-weight: 800; font-size: 13px; color: #fff; margin-top: 4px;">USA</span>
+        </div>
+        <div style="font-family: var(--font-header); font-size: 36px; font-weight: 900; color: #fff; letter-spacing: 2px;" id="lblHeroScoreboard">0 - 0</div>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <div class="team-jersey jersey-eng"></div>
+          <span style="font-weight: 800; font-size: 13px; color: #fff; margin-top: 4px;">ENG</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEFT SIDEBAR: Ticket, Nav, and Mini Penalty Kick Game -->
+    <aside class="left-aside" role="complementary" aria-label="Ticket and Games Side Menu">
+      
+      <!-- Ticket Input Card -->
+      <section class="glass-panel" aria-labelledby="ticket-title">
+        <div class="panel-header">
+          <h2 class="panel-title" id="ticket-title">
+            <i data-lucide="ticket" aria-hidden="true"></i>
+            Matchday Ticket
+          </h2>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="ticketSection">Seat Section</label>
+          <select id="ticketSection" class="form-control" onchange="updateTicketContext()" aria-required="true">
+            <option value="">Select Section</option>
+            <!-- 100 level -->
+            <option value="101">Sec 101 - Lower Sideline</option>
+            <option value="105">Sec 105 - Lower Corner</option>
+            <option value="108">Sec 108 - Lower Endline</option>
+            <option value="112">Sec 112 - Lower Corner</option>
+            <!-- 200 level -->
+            <option value="201">Sec 201 - Upper Sideline</option>
+            <option value="205">Sec 205 - Upper Corner</option>
+            <option value="208">Sec 208 - Upper Endline</option>
+            <option value="212">Sec 212 - Upper Corner</option>
+          </select>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="form-group">
+            <label class="form-label" for="ticketRow">Row</label>
+            <input type="text" id="ticketRow" class="form-control" value="K" onchange="updateTicketContext()">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="ticketSeat">Seat</label>
+            <input type="text" id="ticketSeat" class="form-control" value="18" onchange="updateTicketContext()">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="ticketGate">Recommended Gate</label>
+          <select id="ticketGate" class="form-control" onchange="updateTicketContext()">
+            <option value="A">Gate A (North Entrance)</option>
+            <option value="B">Gate B (East Entrance)</option>
+            <option value="C">Gate C (South Entrance)</option>
+            <option value="D">Gate D (West Entrance)</option>
+          </select>
+        </div>
+        
+        <!-- Toggle Accessibility -->
+        <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; margin-top: 15px; margin-bottom: 15px;">
+          <label class="form-label" for="accessibilityToggle" style="margin-bottom: 0;">Accessibility Mode</label>
+          <label class="switch-container">
+            <input type="checkbox" id="accessibilityToggle" onchange="updateTicketContext()">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Launch AR Wayfinding Button -->
+        <button class="btn-checkout" style="background: var(--fifa-blue); color: white; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="openArWayfinding()" aria-label="Launch Augmented Reality Wayfinding camera">
+          <i data-lucide="camera" style="width: 15px; height: 15px;" aria-hidden="true"></i>
+          Launch AR Wayfinding HUD
+        </button>
+      </section>
+
+      <!-- Shootout Mini-Game Challenge -->
+      <section class="glass-panel" aria-labelledby="shootout-title">
+        <div class="panel-header">
+          <h2 class="panel-title" id="shootout-title" style="color: var(--fifa-gold);">
+            <i data-lucide="gamepad-2" aria-hidden="true"></i>
+            Shootout Challenge
+          </h2>
+          <span class="logo-badge" style="background: var(--fifa-gold); color: black;" id="lblShootoutWins" aria-live="polite">WINS: 0</span>
+        </div>
+        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Flick or click the ball to score past the goalie! Goals update scoreboard.</p>
+        <div style="position: relative; height: 155px; background: #03140a; border-radius: 8px; border: 1px solid rgba(0, 229, 117, 0.2); overflow: hidden;">
+          <canvas id="penaltyGameCanvas" style="width: 100%; height: 100%; display: block; cursor: crosshair;" aria-label="Interactive Soccer Penalty Kick Shootout Game Canvas"></canvas>
+        </div>
+      </section>
+
+      <!-- EcoScore Sustainability Badge tracker -->
+      <section class="glass-panel" aria-labelledby="eco-title">
+        <div class="panel-header">
+          <h2 class="panel-title" id="eco-title">
+            <i data-lucide="leaf" style="color: var(--fifa-green)" aria-hidden="true"></i>
+            EcoScore Sustainability
+          </h2>
+          <span style="font-weight: 800; color: var(--fifa-green)" id="lblEcoScore" aria-live="polite">120 pts</span>
+        </div>
+        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Log green activities at the stadium to unlock exclusive digital badges and concession discounts!</p>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button class="btn-checkout" style="background: rgba(0, 229, 117, 0.15); color: var(--fifa-green); border: 1px solid rgba(0, 229, 117, 0.3);" onclick="addEcoPoints(50, 'Recycled Cup')">
+            <i data-lucide="recycle" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 5px;" aria-hidden="true"></i>
+            Recycle Cup/Bottle (+50 pts)
+          </button>
+          <button class="btn-checkout" style="background: rgba(0, 229, 117, 0.15); color: var(--fifa-green); border: 1px solid rgba(0, 229, 117, 0.3);" onclick="addEcoPoints(70, 'Mass Transit')">
+            <i data-lucide="train" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 5px;" aria-hidden="true"></i>
+            Arrived via Light Rail (+70 pts)
+          </button>
+        </div>
+        <div class="eco-badge-container">
+          <div class="eco-badge unlocked" id="badge-eco-1" title="Eco Fan - Logged transit travel">
+            <i data-lucide="shield-check" style="width: 20px; height: 20px;" aria-hidden="true"></i>
+          </div>
+          <div class="eco-badge" id="badge-eco-2" title="Recycling Master - Recycle 2 plastics">
+            <i data-lucide="award" style="width: 20px; height: 20px;" aria-hidden="true"></i>
+          </div>
+          <div class="eco-badge" id="badge-eco-3" title="Zero Waste Hero - Logged 250 EcoScore pts">
+            <i data-lucide="sprout" style="width: 20px; height: 20px;" aria-hidden="true"></i>
+          </div>
+        </div>
+      </section>
+
+    </aside>
+
+    <!-- CENTER AREA: Interactive Map & Live Stream -->
+    <section class="center-main">
+      
+      <!-- Interactive Stadium Map Card -->
+      <div class="glass-panel map-card" aria-label="Stadium Map Box">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <i data-lucide="map-pin" aria-hidden="true"></i>
+            Interactive Stadium Guide
+          </h2>
+          <span style="font-size: 11px; color: var(--fifa-green); display: flex; align-items: center; gap: 4px;" id="routeTipText">
+            Select ticket details to draw route
+          </span>
+        </div>
+        <div class="map-wrapper" id="fanMapContainer">
+          <!-- Rendered dynamically by map-component.js -->
+        </div>
+        <div id="routeOverlayInfo" style="display: none; padding: 12px; background: rgba(3, 5, 11, 0.9); margin-top: 10px; border-radius: 6px; font-size: 12px; border-left: 3px solid var(--fifa-gold);" aria-live="polite">
+          <strong style="color: var(--fifa-gold);">Personalized Gate Route:</strong> 
+          <span id="routeDirectionsText">Route instructions loaded...</span>
+        </div>
+      </div>
+
+      <!-- Real-time Match Stream & Transit Advisory -->
+      <section class="glass-panel" aria-labelledby="stream-title">
+        <div class="panel-header">
+          <h2 class="panel-title" id="stream-title">
+            <i data-lucide="radio" aria-hidden="true"></i>
+            Live Matchday Stream
+          </h2>
+          <span class="logo-badge" style="background: var(--fifa-gold); color: var(--bg-darker);" id="lblTransitAlert">Transit Normal</span>
+        </div>
+        <div id="liveStreamFeed" style="display: flex; flex-direction: column; gap: 10px; max-height: 180px; overflow-y: auto; padding-right: 4px;" aria-live="polite">
+          <!-- Populated by App JS -->
+        </div>
+      </section>
+
+    </section>
+
+    <!-- RIGHT SIDEBAR: Smart Assistant, Concessions, Soundboard, Emergency SOS -->
+    <aside class="right-aside" role="complementary" aria-label="Concession and Assistant Panel">
+      
+      <!-- Smart AI Assistant -->
+      <section class="glass-panel assistant-card" aria-label="Multilingual AI Assistant Box">
+        <div class="assistant-top">
+          <h2 class="panel-title">
+            <i data-lucide="sparkles" aria-hidden="true"></i>
+            AI Assistant
+          </h2>
+          <select id="assistantLanguage" class="lang-select" onchange="changeLanguage(this.value)" aria-label="Select Assistant Language">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="pt">Português</option>
+            <option value="de">Deutsch</option>
+            <option value="ar">العربية</option>
+          </select>
+        </div>
+        
+        <div class="chat-box" id="assistantChatBox" aria-live="polite" aria-relevant="additions">
+          <div class="chat-msg bot">
+            Hello! Enter your ticket details or click any preset to begin. I speak English, Spanish, French, Portuguese, German, and Arabic!
+          </div>
+        </div>
+
+        <div class="chat-presets" id="assistantPresets">
+          <button class="preset-btn" onclick="sendPresetQuery('Where is food?')">Closest Food</button>
+          <button class="preset-btn" onclick="sendPresetQuery('Nearest restroom')">Restroom</button>
+          <button class="preset-btn" onclick="sendPresetQuery('Is there elevator access?')">Elevator</button>
+          <button class="preset-btn" onclick="sendPresetQuery('How do I leave to train?')">Train Station</button>
+        </div>
+
+        <div class="chat-input-wrapper">
+          <input type="text" id="assistantChatInput" class="form-control" placeholder="Ask anything about the stadium..." onkeydown="handleChatSubmit(event)" aria-label="Type message to AI Assistant">
+          <button class="btn-icon" onclick="submitChatMsg()" aria-label="Send message to AI">
+            <i data-lucide="send" style="width: 16px; height: 16px;" aria-hidden="true"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- Stadium Chant Soundboard -->
+      <section class="glass-panel" aria-labelledby="soundboard-title">
+        <div class="panel-header">
+          <h2 class="panel-title" id="soundboard-title">
+            <i data-lucide="volume-2" aria-hidden="true"></i>
+            Stadium Chant Zone
+          </h2>
+        </div>
+        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Trigger stadium crowds and chants using native Web Audio synthesis!</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <button class="preset-btn" style="padding: 6px;" onclick="playStadiumSound('cheer')">📣 Crowd Cheer</button>
+          <button class="preset-btn" style="padding: 6px;" onclick="playStadiumSound('vuvuzela')">🎺 Vuvuzela</button>
+          <button class="preset-btn" style="padding: 6px;" onclick="playStadiumSound('whistle')">💨 Ref Whistle</button>
+          <button class="preset-btn" style="padding: 6px;" onclick="playStadiumSound('drum')">🥁 Fan Drum</button>
+        </div>
+      </section>
+
+      <!-- Express Concessions Pick-up -->
+      <section class="glass-panel shop-card" aria-label="Concessions Shop Box">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <i data-lucide="shopping-bag" aria-hidden="true"></i>
+            Express Concessions
+          </h2>
+          <span style="font-size: 11px; color: var(--fifa-gold);" id="lblShopName">Locating Stall...</span>
+        </div>
+        <div class="shop-grid" id="concessionShopGrid">
+          <!-- Food items generated by JS -->
+        </div>
+        <div class="cart-summary" id="cartSummarySection" style="display: none;">
+          <div class="cart-row">
+            <span>Subtotal:</span>
+            <span id="cartSubtotal">$0.00</span>
+          </div>
+          <div class="cart-row" style="color: var(--fifa-green);">
+            <span>Eco Discount (10%):</span>
+            <span id="cartDiscount">-$0.00</span>
+          </div>
+          <div class="cart-row" style="font-weight: bold; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 4px;">
+            <span>Total:</span>
+            <span id="cartTotal">$0.00</span>
+          </div>
+          <button class="btn-checkout" onclick="checkoutCart()">Place Order & Get QR Code</button>
+        </div>
+        <div id="concessionOrderSuccess" style="display: none; text-align: center; padding: 10px; background: rgba(0,229,117,0.1); border-radius: 6px; margin-top: 10px; font-size: 12px; border: 1px dashed var(--fifa-green);">
+          <div style="font-weight: bold; color: var(--fifa-green); margin-bottom: 4px;">Order Placed! Express Code:</div>
+          <div style="font-size: 18px; font-weight: bold; font-family: monospace; letter-spacing: 2px; color: #fff;" id="orderQRLabel">F-8204-Q</div>
+          <div style="color: var(--text-muted); font-size: 10px; margin-top: 4px;">Ready at concession pickup counter in 3 minutes.</div>
+        </div>
+      </section>
+
+      <!-- One-Tap Emergency SOS Card -->
+      <section class="glass-panel sos-card" aria-labelledby="sos-title">
+        <div class="panel-header">
+          <h2 class="panel-title" id="sos-title" style="color: var(--red-card);">
+            <i data-lucide="alert-octagon" aria-hidden="true"></i>
+            Emergency SOS Help
+          </h2>
+        </div>
+        <div id="sosInitialView">
+          <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Require immediate assistance at your seat? Tap the button to report. Abuse of SOS triggers steward response.</p>
+          <button class="btn-sos" onclick="triggerSosEmergency()" aria-label="Activate Emergency SOS Assistance Alert">
+            <i data-lucide="megaphone" style="width: 18px; height: 18px;" aria-hidden="true"></i>
+            REPORT INCIDENT / SOS
+          </button>
+        </div>
+        <!-- SOS Active Tracking Details -->
+        <div id="sosTrackingView" style="display: none;" aria-live="assertive">
+          <div class="sos-active-panel">
+            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 12px; color: #fff; margin-bottom: 8px;">
+              <span>SOS REPORT FILED</span>
+              <span style="color: var(--red-card); animation: flash 1s infinite;">● ACTIVE DISPATCH</span>
+            </div>
+            
+            <div class="sos-track-step">
+              <div class="sos-dot done" id="sosStep-1">✓</div>
+              <div>
+                <strong style="color: #fff;">AI Triage Completed</strong>
+                <div style="font-size: 10px; color: var(--text-muted);" id="sosTriageDetails">SOP Created. Nearest Security dispatch suggested.</div>
+              </div>
+            </div>
+
+            <div class="sos-track-step">
+              <div class="sos-dot active" id="sosStep-2">2</div>
+              <div>
+                <strong style="color: #fff;">Steward Dispatched</strong>
+                <div style="font-size: 10px; color: var(--text-muted);" id="sosDispatchDetails">Officer Elena dispatched from Section 122.</div>
+              </div>
+            </div>
+
+            <div class="sos-track-step">
+              <div class="sos-dot" id="sosStep-3">3</div>
+              <div>
+                <strong style="color: var(--text-muted);" id="sosStepTitle-3">Resolved</strong>
+                <div style="font-size: 10px; color: var(--text-muted);">Issue addressed by responders.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </aside>
+  </main>
+
+  <!-- ==================== COMMAND CENTER PORTAL (OPERATIONS) ==================== -->
+  <main class="portal-container" id="staffPortal" role="main" aria-label="Operations Command Center" style="margin-bottom: 60px;">
+    
+    <!-- LEFT SIDEBAR: Operational Vitals & Metrics -->
+    <aside class="left-aside" role="complementary" aria-label="Operations Vitals Panel">
+      
+      <!-- Operations Overview Vitals -->
+      <section class="glass-panel" aria-label="Vitals Metrics Summary">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <i data-lucide="gauge" aria-hidden="true"></i>
+            Operations Vitals
+          </h2>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="staff-row">
+            <span>Overall Congestion:</span>
+            <span class="status-available" style="background: rgba(0,229,117,0.15); color: var(--fifa-green);" id="lblTotalCongestion">Optimal</span>
+          </div>
+          <div class="staff-row">
+            <span>Avg Scan Rate / min:</span>
+            <span style="font-weight: bold; color: #fff;" id="lblAvgScanRate">240 fans</span>
+          </div>
+          <div class="staff-row">
+            <span>Active Incidents:</span>
+            <span class="status-busy" style="background: rgba(255,51,51,0.15); color: var(--red-card);" id="lblActiveIncidentCount">0</span>
+          </div>
+          <div class="staff-row">
+            <span>Concessions Backlog:</span>
+            <span style="font-weight: bold; color: var(--fifa-gold);" id="lblConcessionsBacklog">2 orders</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live Gate Congestion Queue wait times -->
+      <section class="glass-panel" aria-label="Gate Congestion Flow charts">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <i data-lucide="bar-chart-3" aria-hidden="true"></i>
+            Gate Queue wait times
+          </h2>
+        </div>
+        <div class="chart-container" id="gateChartContainer">
+          <div class="chart-bar-wrapper">
+            <div class="chart-bar" style="height: 15%; background: var(--fifa-green);" data-value="3 min" id="chartBar-A"></div>
+            <span class="chart-label">Gate A</span>
+          </div>
+          <div class="chart-bar-wrapper">
+            <div class="chart-bar" style="height: 45%; background: var(--fifa-gold);" data-value="9 min" id="chartBar-B"></div>
+            <span class="chart-label">Gate B</span>
+          </div>
+          <div class="chart-bar-wrapper">
+            <div class="chart-bar" style="height: 85%; background: var(--red-card);" data-value="17 min" id="chartBar-C"></div>
+            <span class="chart-label">Gate C</span>
+          </div>
+          <div class="chart-bar-wrapper">
+            <div class="chart-bar" style="height: 25%; background: var(--fifa-green);" data-value="5 min" id="chartBar-D"></div>
+            <span class="chart-label">Gate D</span>
+          </div>
+        </div>
+        <div style="font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 10px;">
+          *Red indicator triggers automatic steward reallocation recommendations.
+        </div>
+      </section>
+
+      <!-- Staff Scheduling Coordinator -->
+      <section class="glass-panel" aria-label="Staff Steward Board">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <i data-lucide="contact-2" aria-hidden="true"></i>
+            Active Stewards Dispatch
+          </h2>
+        </div>
+        <div style="display: flex; flex-direction: column;" id="staffSchedulingGrid">
+          <!-- Loaded by App JS -->
+        </div>
+      </section>
+
+    </aside>
+
+    <!-- CENTER AREA: Command Map Heatmap & Live Dispatch Desk -->
+    <section class="center-main">
+      
+      <!-- Operations Stadium Heatmap Card -->
+      <div class="glass-panel map-card" aria-label="Operations Map Card">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <i data-lucide="network" aria-hidden="true"></i>
+            Operations Flow Heatmap
+          </h2>
+          <div style="display: flex; gap: 8px;">
+            <button class="preset-btn" style="background: rgba(0, 98, 255, 0.15); border-color: rgba(0, 98, 255, 0.3); color: var(--fifa-blue);" onclick="toggleHeatmap('crowd')">Crowd Density</button>
+            <button class="preset-btn" style="background: rgba(255, 51, 51, 0.15); border-color: rgba(255, 51, 51, 0.3); color: var(--red-card);" onclick="toggleHeatmap('incident')">Incident View</button>
+          </div>
+        </div>
+        <div class="map-wrapper" id="staffMapContainer">
+          <!-- Rendered dynamically by map-component.js -->
+        </div>
+      </div>
+
+      <!-- Live Incident Dispatch Board -->
+      <section class="glass-panel" aria-label="Operations Dispatch Board">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <i data-lucide="kanban" aria-hidden="true"></i>
+            Active Dispatch Desk
+          </h2>
+          <span class="logo-badge" style="background: var(--fifa-blue); color: white;" id="lblOpenIncidentHeader">0 Open Tasks</span>
+        </div>
+        <div class="incident-grid" id="staffIncidentsGrid" style="max-height: 250px; overflow-y: auto; padding-right: 4px;">
+          <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 20px;">
+            <i data-lucide="smile" style="width: 32px; height: 32px; color: var(--fifa-green); display: block; margin: 0 auto 10px;"></i>
+            No active incidents. Stadium operating nominal.
+          </div>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- RIGHT SIDEBAR: GenAI Incident triage form, GenAI reports, Concessions -->
+    <aside class="right-aside" role="complementary" aria-label="Operations Controls Panel">
+      
+      <!-- GenAI Incident command Generator -->
+      <section class="glass-panel" aria-label="AI Incident Analyzer Form">
+        <div class="panel-header">
+          <h2 class="panel-title" style="color: var(--fifa-gold);">
+            <i data-lucide="bot" aria-hidden="true"></i>
+            GenAI Incident Triage
+          </h2>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="incidentReportInput">Text Incident Description</label>
+          <textarea id="incidentReportInput" class="form-control" rows="3" placeholder="Describe the issue reported by spectator, sensor, or steward..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="incidentSectionInput">Location Seating Section</label>
+          <select id="incidentSectionInput" class="form-control">
+            <option value="101">Section 101 - Lower Sideline</option>
+            <option value="105">Section 105 - Lower Corner</option>
+            <option value="108">Section 108 - Lower Endline</option>
+            <option value="112">Section 112 - Lower Corner</option>
+            <option value="201">Section 201 - Upper Sideline</option>
+            <option value="205">Section 205 - Upper Corner</option>
+            <option value="208">Section 208 - Upper Endline</option>
+            <option value="212">Section 212 - Upper Corner</option>
+          </select>
+        </div>
+        <button class="btn-checkout" onclick="runAiIncidentTriage()">
+          <i data-lucide="zap" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 5px;" aria-hidden="true"></i>
+          Analyze with AI & Draft Dispatch
+        </button>
+
+        <!-- AI Generated Triage Result (Loaded on Submit) -->
+        <div id="incidentTriageOutput" style="display: none; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span class="severity-tag" id="triageSeverityLabel">High</span>
+            <span style="font-size: 11px; font-weight: bold; color: #fff;" id="triageCategoryLabel">MEDICAL</span>
+          </div>
+          <div class="incident-sop">
+            <div class="incident-sop-title">AI Recommendation SOP:</div>
+            <ul class="sop-steps" id="triageSopSteps">
+              <!-- Loaded dynamically -->
+            </ul>
+          </div>
+          <div style="font-size: 11px; margin-top: 10px; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between;">
+            <span>Resource: <strong style="color: #fff;" id="triageDispatcherLabel">Officer Marcus</strong></span>
+            <span>Est. Dist: <strong style="color: #fff;" id="triageDistanceLabel">24m</strong></span>
+          </div>
+          <button class="btn-checkout" style="background: var(--fifa-blue); color: white; margin-top: 10px;" onclick="dispatchTriageIncident()">
+            Dispatch Recommended Resource
+          </button>
+        </div>
+      </section>
+
+      <!-- GenAI Auto-Reporting Console -->
+      <section class="glass-panel" aria-label="AI Auto-Reports Console Panel">
+        <div class="panel-header">
+          <h2 class="panel-title" style="color: var(--fifa-green);">
+            <i data-lucide="file-text" aria-hidden="true"></i>
+            GenAI Auto-Reports
+          </h2>
+        </div>
+        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Generate instant, automated operational reports using real-time match details and sensor feeds.</p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px;">
+          <button class="preset-btn" style="padding: 6px 4px; font-size: 10px;" onclick="generateAiReport('match')">Match Summary</button>
+          <button class="preset-btn" style="padding: 6px 4px; font-size: 10px; background: rgba(255, 215, 0, 0.1); color: var(--fifa-gold); border-color: rgba(255, 215, 0, 0.25);" onclick="generateAiReport('scoreboard')">Scoreboard Report</button>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px;">
+          <button class="preset-btn" style="padding: 6px 4px; font-size: 10px;" onclick="generateAiReport('crowd')">Crowd Analytics</button>
+          <button class="preset-btn" style="padding: 6px 4px; font-size: 10px;" onclick="generateAiReport('incidents')">Incident Log</button>
+        </div>
+
+        <!-- Automated Developer self-diagnostics runner button -->
+        <button class="btn-checkout" style="background: rgba(0, 98, 255, 0.15); border: 1px solid rgba(0, 98, 255, 0.35); color: var(--fifa-blue); font-size: 10px; padding: 6px;" onclick="runDeveloperDiagnostics()">
+          <i data-lucide="binary" style="width: 13px; height: 13px; vertical-align: middle; margin-right: 5px;" aria-hidden="true"></i>
+          Run Automated Self-Tests
+        </button>
+        
+        <!-- Report Display Console / Diagnostics Log -->
+        <div id="aiConsoleContainer" style="display: none; margin-top: 12px;">
+          <div style="background: #03050b; border: 1px solid var(--fifa-green); border-radius: 6px; padding: 10px; font-family: monospace; font-size: 10px; color: #00e575; max-height: 180px; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0, 229, 117, 0.2); padding-bottom: 4px; margin-bottom: 6px; font-weight: bold;">
+              <span id="lblConsoleTitle">GENERATING REPORT...</span>
+              <span style="color: var(--fifa-gold); cursor: pointer;" onclick="closeConsole()">✕</span>
+            </div>
+            <div id="aiConsoleText" style="white-space: pre-wrap; line-height: 1.4;" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Concessions Queue Manager -->
+      <section class="glass-panel" aria-label="Operations Concessions List">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <i data-lucide="pizza" aria-hidden="true"></i>
+            Concession Pre-orders
+          </h2>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 135px; overflow-y: auto; padding-right: 4px;" id="staffConcessionsQueue">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+    </aside>
+  </main>
+
+  <!-- ==================== SPORTS NETWORK SCROLLING TICKER ==================== -->
+  <footer class="sports-ticker" role="contentinfo">
+    <div class="ticker-label">FIFA 2026 LIVE</div>
+    <div class="ticker-wrap">
+      <div class="ticker-content">
+        ⚽ USA VS ENGLAND LIVE MATCH STREAM ACTIVE • GROUP B STANDINGS: 1. USA (4 PTS) | 2. ENG (4 PTS) | 3. IRN (3 PTS) | 4. WAL (0 PTS) • NEXT MATCH FIXTURES: BRAZIL vs ARGENTINA (Tomorrow 18:00) | FRANCE vs GERMANY (Friday 21:00) • STADIUM UPDATE: METLIFE ARENA IS AT 100% CAPACITY • DRINKING WATER REFILL STATIONS ARE LOCATED NEXT TO ALL CORRIDOR RESTROOMS.
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== AR WAYFINDING HUD MODAL ==================== -->
+  <div class="ar-modal" id="arNavigationModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="ar-modal-title">
+    <div class="ar-modal-content">
+      <div class="ar-header">
+        <div class="panel-title" id="ar-modal-title">
+          <i data-lucide="camera" style="color: var(--fifa-green)" aria-hidden="true"></i>
+          <span>AR Wayfinding HUD</span>
+        </div>
+        <button class="ar-close-btn" onclick="closeArWayfinding()" aria-label="Close Augmented Reality camera screen">✕</button>
+      </div>
+      
+      <div class="ar-body">
+        <video id="arVideo" autoplay playsinline muted aria-hidden="true"></video>
+        <!-- Fallback background when camera is disabled -->
+        <div id="arCameraFallback" class="ar-camera-fallback" aria-hidden="true">
+          <div class="fallback-overlay-text">Simulating Stadium Corridor Walkway...</div>
+        </div>
+        <canvas id="arCanvas" aria-hidden="true"></canvas>
+        
+        <!-- Overlay Directional Indicators -->
+        <div class="ar-hud-overlay">
+          <div class="ar-hud-badge" id="arTargetBadge" aria-live="polite">TARGET: SEAT 18</div>
+          <div class="ar-hud-distance" id="arDistanceBadge" aria-live="polite">12 meters remaining</div>
+          <div class="ar-direction-arrow-desc" id="arInstructionOverlay" aria-live="polite">Follow green arrows along Section 112 corridor</div>
+        </div>
+      </div>
+      
+      <div class="ar-footer" role="tablist">
+        <button class="mode-tab active" id="btnArSeat" role="tab" aria-selected="true" onclick="switchArDestination('seat')">
+          <i data-lucide="ticket" style="width: 14px; height: 14px;" aria-hidden="true"></i> Seat
+        </button>
+        <button class="mode-tab" id="btnArExit" role="tab" aria-selected="false" onclick="switchArDestination('exit')">
+          <i data-lucide="log-out" style="width: 14px; height: 14px;" aria-hidden="true"></i> Exit
+        </button>
+        <button class="mode-tab" id="btnArRestroom" role="tab" aria-selected="false" onclick="switchArDestination('restroom')">
+          <i data-lucide="bath" style="width: 14px; height: 14px;" aria-hidden="true"></i> Restroom
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== GOAL CELEBRATION OVERLAY ==================== -->
+  <div class="goal-overlay" id="goalOverlayScreen" style="display: none;" role="dialog" aria-modal="true" aria-live="assertive">
+    <div class="goal-modal">
+      <div class="goal-strobe" aria-hidden="true"></div>
+      <div class="goal-title">GOAL!!!!!</div>
+      <div class="goal-subtitle">THE CROWD GOES WILD! ⚽🏆🎉</div>
+      <div style="font-size: 28px; font-weight: 800; margin-top: 20px; color: var(--fifa-gold); text-shadow: 0 0 15px var(--fifa-gold-glow);" id="goalOverlayScore">USA 1 - 0 ENG</div>
+      <button class="btn-checkout" style="width: auto; padding: 10px 25px; background: var(--fifa-gold); color: #000; margin-top: 30px; font-weight: bold;" onclick="closeGoalCelebration()">
+        Return to Match
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== ALERT NOTIFICATION POPUP ==================== -->
+  <div class="alert-popup" id="systemAlertPopup" style="display: none;" role="alert" aria-live="assertive">
+    <!-- Flip Card Design: pull warning card -->
+    <div class="alert-card-flip" id="alertCardContainer" aria-hidden="true">
+      <div class="alert-card-front" id="alertCardFront">
+        <div class="alert-icon">
+          <i data-lucide="alert-triangle" style="width: 28px; height: 28px;"></i>
+        </div>
+      </div>
+    </div>
+    <div class="alert-content">
+      <div class="alert-title" id="alertPopupTitle">CROWD CONGESTION</div>
+      <div class="alert-body" id="alertPopupBody">Gate C queue wait times exceeded 15 minutes. Dispatching volunteer team to Gate C to open secondary ticket readers.</div>
+    </div>
+    <button class="btn-close-alert" onclick="dismissAlertPopup()" aria-label="Close Alert Banner">
+      <i data-lucide="x" style="width: 16px; height: 16px;" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <script src="ai-engine.js"></script>
+  <script src="incident-ai.js"></script>
+  <script src="map-component.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // Initialize Lucide Icons on load
+    lucide.createIcons();
+  </script>
+</body>
+</html>
