@@ -11,6 +11,12 @@
 </head>
 <body>
 
+  <!-- Stadium Night Floodlights -->
+  <div class="floodlight-container" aria-hidden="true">
+    <div class="floodlight light-left"></div>
+    <div class="floodlight light-right"></div>
+  </div>
+
   <!-- Navigation Bar -->
   <nav class="app-nav" role="navigation" aria-label="Main Navigation">
     <div class="logo-container">
@@ -691,6 +697,11 @@
   <script src="incident-ai.js"></script>
   <script src="map-component.js"></script>
   <script src="app.js"></script>
+  <!-- Bouncing/Spinning Soccer Ball Mascot Widget -->
+  <div class="football-mascot" id="mascotBall" onclick="playStadiumSound('cheer')" aria-label="Click soccer ball to cheer!">
+    <div class="soccer-ball-spinner">⚽</div>
+  </div>
+
   <script>
     // Initialize Lucide Icons on load
     lucide.createIcons();

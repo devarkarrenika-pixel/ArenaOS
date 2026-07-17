@@ -90,11 +90,12 @@ body.theme-mexico {
 
 body {
   background: var(--bg-stadium);
-  /* Football grass pitch grid pattern */
+  /* Football grass pitch alternating green lawn stripes & grid markings */
   background-image: 
-    linear-gradient(rgba(0, 229, 117, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 229, 117, 0.02) 1px, transparent 1px);
-  background-size: 60px 60px;
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 117, 0.02) 50%, transparent 50%);
+  background-size: 80px 80px, 80px 80px, 160px 100%;
   background-attachment: fixed;
   color: var(--text-main);
   font-family: var(--font-body);
@@ -1496,4 +1497,69 @@ input:checked + .slider:before {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--fifa-green);
+}
+
+/* Stadium Night Floodlights */
+.floodlight-container {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.floodlight {
+  position: absolute;
+  top: -80px;
+  width: 250px;
+  height: 400px;
+  background: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 50%, rgba(255, 255, 255, 0) 80%);
+  filter: blur(15px);
+  pointer-events: none;
+  animation: pulseLight 6s infinite ease-in-out;
+}
+
+.light-left {
+  left: 2%;
+  transform: rotate(25deg);
+}
+
+.light-right {
+  right: 2%;
+  transform: rotate(-25deg);
+  animation-delay: 3s;
+}
+
+@keyframes pulseLight {
+  0%, 100% { opacity: 0.5; transform: rotate(var(--rot, 25deg)) scale(1); }
+  50% { opacity: 0.9; transform: rotate(var(--rot, 25deg)) scale(1.05); }
+}
+
+.light-left { --rot: 25deg; }
+.light-right { --rot: -25deg; }
+
+/* Spinning/Bouncing Football Mascot Widget */
+.football-mascot {
+  position: fixed;
+  bottom: 80px;
+  right: 25px;
+  z-index: 999;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.football-mascot:hover {
+  transform: scale(1.15);
+}
+
+.soccer-ball-spinner {
+  font-size: 32px;
+  animation: bounceSpin 3.5s infinite ease-in-out;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6));
+}
+
+@keyframes bounceSpin {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+  50% { transform: translateY(-35px) rotate(360deg) scale(1.15); }
 }
