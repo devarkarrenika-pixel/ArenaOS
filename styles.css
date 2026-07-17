@@ -4,11 +4,11 @@
 
 :root {
   /* Colors */
-  --bg-dark: #060a17;
-  --bg-darker: #03050b;
-  --bg-stadium: radial-gradient(circle at top, #0c1a36 0%, #060a17 100%);
-  --panel-bg: rgba(13, 25, 54, 0.7);
-  --panel-bg-hover: rgba(18, 33, 70, 0.85);
+  --bg-dark: #03170a;
+  --bg-darker: #010804;
+  --bg-stadium: #021107;
+  --panel-bg: rgba(6, 26, 12, 0.82);
+  --panel-bg-hover: rgba(10, 41, 19, 0.9);
   --border-color: rgba(0, 229, 117, 0.15);
   --border-glow: rgba(0, 229, 117, 0.35);
   --text-main: #f3f4f6;
